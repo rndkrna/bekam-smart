@@ -1,4 +1,15 @@
-import { UserRole, GenderLane } from "@prisma/client";
+export const UserRole = {
+  ADMIN: "ADMIN",
+  THERAPIST: "THERAPIST",
+  CASHIER: "CASHIER",
+} as const;
+export type UserRole = (typeof UserRole)[keyof typeof UserRole];
+
+export const GenderLane = {
+  MALE: "MALE",
+  FEMALE: "FEMALE",
+} as const;
+export type GenderLane = (typeof GenderLane)[keyof typeof GenderLane];
 
 export interface SessionUser {
   id: string;

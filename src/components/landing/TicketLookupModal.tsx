@@ -48,17 +48,12 @@ export function TicketLookupModal({ isOpen, onClose }: TicketLookupModalProps) {
     }
   };
 
-  const handleQuickLookup = (code: string) => {
-    setQuery(code);
-    handleSearch(code);
-  };
-
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       title="Cari Tiket Antrean Saya"
-      description="Masukkan nomor antrean (misal: P-003, W-004) atau token rahasia tiket Anda."
+      description="Masukkan nomor antrean atau token rahasia tiket Anda."
     >
       <div className="space-y-4">
         {error && (
@@ -71,7 +66,7 @@ export function TicketLookupModal({ isOpen, onClose }: TicketLookupModalProps) {
         <div className="space-y-2">
           <Input
             type="text"
-            placeholder="Contoh: P-003 atau tk_p003_demo"
+            placeholder="Masukkan nomor antrean atau token tiket"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
@@ -80,36 +75,6 @@ export function TicketLookupModal({ isOpen, onClose }: TicketLookupModalProps) {
             icon={<Search className="h-4 w-4" />}
             autoFocus
           />
-        </div>
-
-        {/* Demo Quick Chips */}
-        <div>
-          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1.5">
-            Coba contoh nomor antrean aktif:
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickLookup("P-003")}
-              className="rounded-lg bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-800 hover:bg-teal-100 dark:bg-teal-950 dark:text-teal-300 transition-colors"
-            >
-              P-003 (Ikhwan)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLookup("W-004")}
-              className="rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 transition-colors"
-            >
-              W-004 (Akhwat)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLookup("P-002")}
-              className="rounded-lg bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-800 hover:bg-sky-100 dark:bg-sky-950 dark:text-sky-300 transition-colors"
-            >
-              P-002 (Dipanggil)
-            </button>
-          </div>
         </div>
 
         <div className="pt-2 flex justify-end gap-2">

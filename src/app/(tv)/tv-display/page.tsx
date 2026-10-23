@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   Volume2,
   VolumeX,
-  Play,
   RotateCcw,
   Sparkles,
   Clock,
@@ -16,12 +15,15 @@ import {
   Maximize,
 } from "lucide-react";
 import { INITIAL_QUEUES, LiveQueueTicket } from "@/lib/data/mock-data";
+import {
+  announceQueueCallout,
+  formatTicketNumberForSpeech,
+  formatRoomNameForSpeech,
+} from "@/lib/utils/audio-announcer";
 
 export default function TvDisplayPage() {
-  const [queues, setQueues] = React.useState<LiveQueueTicket[]>(INITIAL_QUEUES);
-  const [activeCall, setActiveCall] = React.useState<LiveQueueTicket | null>(
-    INITIAL_QUEUES.find((q) => q.status === "CALLED") ?? INITIAL_QUEUES[0]
-  );
+  const [queues, setQueues] = React.useState<LiveQueueTicket[]>([]);
+  const [activeCall, setActiveCall] = React.useState<LiveQueueTicket | null>(null);
   const [currentTime, setCurrentTime] = React.useState<string>("");
   const [currentDate, setCurrentDate] = React.useState<string>("");
   const [isMuted, setIsMuted] = React.useState(false);
@@ -53,73 +55,56 @@ export default function TvDisplayPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Web Audio Chime Synthesizer (Ding Dong)
-  const playChime = () => {
+  // Web Speech API Voice Announcement in Indonesian with Airport Chime
+  const speakCallout = React.useCallback(
+    (ticket: LiveQueueTicket) => {
+      if (isMuted || typeof window === "undefined") {
+        return;
+      }
+
+      const spokenTicket = formatTicketNumberForSpeech(ticket.ticketNumber);
+      const spokenRoom = formatRoomNameForSpeech(ticket.roomName ?? "Ruang Terapi");
+      setLastSpeechText(`Nomor antrean ${spokenTicket}, silakan menuju ke ${spokenRoom}.`);
+
+      announceQueueCallout(ticket.ticketNumber, ticket.roomName ?? "Ruang Terapi");
+    },
+    [isMuted]
+  );
+
+  // Live Queue Fetching & Real-time Auto-Announcement on TV Display
+  const lastAnnouncedRef = React.useRef<string | null>(null);
+
+  const fetchQueues = React.useCallback(async () => {
     try {
-      const AudioCtx =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
+      const res = await fetch("/api/queues", { cache: "no-store" });
+      if (!res.ok) return;
+      const json = await res.json();
+      if (!json.data?.queues) return;
 
-      // Tone 1: High Bell
-      const osc1 = ctx.createOscillator();
-      const gain1 = ctx.createGain();
-      osc1.type = "sine";
-      osc1.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-      gain1.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-      osc1.connect(gain1);
-      gain1.connect(ctx.destination);
-      osc1.start(ctx.currentTime);
-      osc1.stop(ctx.currentTime + 0.6);
+      const liveQueues: LiveQueueTicket[] = json.data.queues;
+      setQueues(liveQueues);
 
-      // Tone 2: Lower Bell
-      const osc2 = ctx.createOscillator();
-      const gain2 = ctx.createGain();
-      osc2.type = "sine";
-      osc2.frequency.setValueAtTime(440.0, ctx.currentTime + 0.35); // A4
-      gain2.gain.setValueAtTime(0.3, ctx.currentTime + 0.35);
-      gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-      osc2.connect(gain2);
-      gain2.connect(ctx.destination);
-      osc2.start(ctx.currentTime + 0.35);
-      osc2.stop(ctx.currentTime + 1.2);
+      // Find currently called ticket
+      const calledTicket = liveQueues.find((q) => q.status === "CALLED");
+      if (calledTicket) {
+        setActiveCall(calledTicket);
+        // If it's a new call or newly called ticket, trigger automatic voice announcement
+        const callKey = `${calledTicket.ticketNumber}_${calledTicket.calledTime || ""}`;
+        if (lastAnnouncedRef.current && lastAnnouncedRef.current !== callKey) {
+          speakCallout(calledTicket);
+        }
+        lastAnnouncedRef.current = callKey;
+      }
     } catch {
-      // Audio not permitted yet
+      // Ignore network errors
     }
-  };
+  }, [speakCallout]);
 
-  // Web Speech API Voice Announcement in Indonesian
-  const speakCallout = (ticket: LiveQueueTicket) => {
-    if (isMuted || typeof window === "undefined" || !("speechSynthesis" in window)) {
-      return;
-    }
-
-    playChime();
-
-    // Format speech text (e.g. "Nomor Antrean P-002, silakan menuju ke Ruang Terapi 2")
-    const letter = ticket.ticketNumber.charAt(0) === "P" ? "P" : "W";
-    const digits = ticket.ticketNumber.substring(2);
-    const textToSpeak = `Nomor Antrean ${letter} ${digits}, silakan menuju ke ${ticket.roomName ?? "Ruang Terapi"}.`;
-
-    setLastSpeechText(textToSpeak);
-
-    setTimeout(() => {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(textToSpeak);
-      utterance.lang = "id-ID";
-      utterance.rate = 0.9; // clear, steady pace
-      utterance.pitch = 1.0;
-
-      // Select Indonesian voice if available in system
-      const voices = window.speechSynthesis.getVoices();
-      const idVoice = voices.find((v) => v.lang.includes("id") || v.lang.includes("ID"));
-      if (idVoice) utterance.voice = idVoice;
-
-      window.speechSynthesis.speak(utterance);
-    }, 700);
-  };
+  React.useEffect(() => {
+    fetchQueues();
+    const interval = setInterval(fetchQueues, 3000);
+    return () => clearInterval(interval);
+  }, [fetchQueues]);
 
   const handleManualCall = (ticket: LiveQueueTicket) => {
     setActiveCall(ticket);
@@ -262,44 +247,17 @@ export default function TvDisplayPage() {
             </div>
           )}
 
-          {/* Interactive Trigger for Reception Staff */}
-          <div className="border-t border-slate-800 pt-4 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">Uji Panggilan Cepat:</span>
-              <button
-                onClick={() =>
-                  handleManualCall(
-                    queues.find((q) => q.ticketNumber === "P-002") ?? queues[0]
-                  )
-                }
-                className="rounded-lg bg-teal-900/60 px-3 py-1.5 text-xs font-bold text-teal-300 hover:bg-teal-800 border border-teal-700/50 transition-colors flex items-center gap-1.5"
-              >
-                <Play className="h-3 w-3" />
-                Panggil P-002
-              </button>
-              <button
-                onClick={() =>
-                  handleManualCall(
-                    queues.find((q) => q.ticketNumber === "W-003") ?? queues[5]
-                  )
-                }
-                className="rounded-lg bg-emerald-900/60 px-3 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-800 border border-emerald-700/50 transition-colors flex items-center gap-1.5"
-              >
-                <Play className="h-3 w-3" />
-                Panggil W-003
-              </button>
-            </div>
-
-            {activeCall && (
+          {activeCall && (
+            <div className="border-t border-slate-800 pt-4 flex items-center justify-end">
               <button
                 onClick={() => speakCallout(activeCall)}
-                className="rounded-lg bg-sky-900/60 px-3 py-1.5 text-xs font-bold text-sky-300 hover:bg-sky-800 border border-sky-700/50 transition-colors flex items-center gap-1.5"
+                className="rounded-lg bg-sky-900/60 px-3.5 py-1.5 text-xs font-bold text-sky-300 hover:bg-sky-800 border border-sky-700/50 transition-colors flex items-center gap-1.5"
               >
                 <Volume2 className="h-3.5 w-3.5" />
                 Panggil Ulang Suara
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Right Split: Lane Lists (5 Cols) */}

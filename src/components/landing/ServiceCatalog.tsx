@@ -109,20 +109,11 @@ export function ServiceCatalog({ onSelectService }: ServiceCatalogProps) {
                   </h3>
                 </div>
 
-                {/* Description */}
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed min-h-[48px]">
-                  {service.description}
-                </p>
-
-                {/* Specs: Duration & Cup quantity */}
+                {/* Duration */}
                 <div className="flex items-center gap-4 py-2 border-y border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400">
                   <div className="flex items-center gap-1.5 font-medium">
                     <Clock className="h-4 w-4 text-teal-600" />
                     <span>{service.durationMinutes} Menit</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 font-medium">
-                    <Layers className="h-4 w-4 text-emerald-600" />
-                    <span>{service.cupQuantity} Titik Kop</span>
                   </div>
                 </div>
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { INITIAL_QUEUES } from "@/lib/data/mock-data";
+import { RuntimeQueueStore } from "@/lib/data/runtime-store";
 import { calculateEstimatedWait } from "@/lib/utils/queue-estimator";
 
 export async function GET(
@@ -15,12 +15,8 @@ export async function GET(
     );
   }
 
-  // Lookup in runtime queue collection
-  const ticket = INITIAL_QUEUES.find(
-    (q) =>
-      q.secretToken.toLowerCase() === token.toLowerCase() ||
-      q.ticketNumber.toLowerCase() === token.toLowerCase()
-  );
+  // Lookup in unified runtime store
+  const ticket = RuntimeQueueStore.getQueueByIdOrToken(token);
 
   if (!ticket) {
     return NextResponse.json(
@@ -33,7 +29,8 @@ export async function GET(
   }
 
   // Re-calculate real-time people ahead
-  const sameLaneWaiting = INITIAL_QUEUES.filter(
+  const allQueues = RuntimeQueueStore.getQueues();
+  const sameLaneWaiting = allQueues.filter(
     (q) => q.lane === ticket.lane && q.status === "WAITING"
   );
   const ticketIndex = sameLaneWaiting.findIndex((q) => q.id === ticket.id);

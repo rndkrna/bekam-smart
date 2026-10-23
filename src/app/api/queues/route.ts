@@ -1,41 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
-import { queueRegistrationSchema } from "@/lib/validations/queue";
-import { INITIAL_QUEUES, INITIAL_SERVICES, LiveQueueTicket } from "@/lib/data/mock-data";
+import { queueRegistrationSchema, statusTransitionSchema } from "@/lib/validations/queue";
+import { INITIAL_SERVICES, LiveQueueTicket } from "@/lib/data/mock-data";
+import { RuntimeQueueStore } from "@/lib/data/runtime-store";
 import { calculateEstimatedWait } from "@/lib/utils/queue-estimator";
-
-// In-memory runtime queue registry for live development & demonstration
-// (Backed by Prisma in persistent environments)
-const runtimeQueues: LiveQueueTicket[] = [...INITIAL_QUEUES];
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const lane = searchParams.get("lane"); // "MALE" | "FEMALE" | null
+  const lane = searchParams.get("lane") as "MALE" | "FEMALE" | null;
 
-  let filtered = [...runtimeQueues];
-  if (lane === "MALE" || lane === "FEMALE") {
-    filtered = filtered.filter((q) => q.lane === lane);
-  }
+  const allQueues = RuntimeQueueStore.getQueues();
+  const filtered = RuntimeQueueStore.getQueues(lane);
 
-  // Calculate live statistics
-  const maleWaiting = runtimeQueues.filter(
+  // Calculate live statistics per lane
+  const maleWaiting = allQueues.filter(
     (q) => q.lane === "MALE" && q.status === "WAITING"
   );
-  const maleInTherapy = runtimeQueues.filter(
+  const maleInTherapy = allQueues.filter(
     (q) => q.lane === "MALE" && (q.status === "IN_THERAPY" || q.status === "CALLED")
   );
-  const maleCurrentServing = runtimeQueues.find(
-    (q) => q.lane === "MALE" && q.status === "CALLED"
-  ) ?? runtimeQueues.find((q) => q.lane === "MALE" && q.status === "IN_THERAPY");
+  const maleCalled = allQueues.filter((q) => q.lane === "MALE" && q.status === "CALLED");
+  const maleTherapyOnly = allQueues.filter((q) => q.lane === "MALE" && q.status === "IN_THERAPY");
+  const maleCurrentServing = maleCalled[maleCalled.length - 1] ?? maleTherapyOnly[maleTherapyOnly.length - 1];
 
-  const femaleWaiting = runtimeQueues.filter(
+  const femaleWaiting = allQueues.filter(
     (q) => q.lane === "FEMALE" && q.status === "WAITING"
   );
-  const femaleInTherapy = runtimeQueues.filter(
+  const femaleInTherapy = allQueues.filter(
     (q) => q.lane === "FEMALE" && (q.status === "IN_THERAPY" || q.status === "CALLED")
   );
-  const femaleCurrentServing = runtimeQueues.find(
-    (q) => q.lane === "FEMALE" && q.status === "CALLED"
-  ) ?? runtimeQueues.find((q) => q.lane === "FEMALE" && q.status === "IN_THERAPY");
+  const femaleCalled = allQueues.filter((q) => q.lane === "FEMALE" && q.status === "CALLED");
+  const femaleTherapyOnly = allQueues.filter((q) => q.lane === "FEMALE" && q.status === "IN_THERAPY");
+  const femaleCurrentServing = femaleCalled[femaleCalled.length - 1] ?? femaleTherapyOnly[femaleTherapyOnly.length - 1];
 
   const maleWaitEstimation = calculateEstimatedWait(maleWaiting.length, {
     lane: "MALE",
@@ -49,37 +44,52 @@ export async function GET(req: NextRequest) {
     averageServiceDurationMinutes: 45,
   });
 
-  return NextResponse.json({
-    success: true,
-    data: {
-      queues: filtered,
-      lanes: {
-        male: {
-          code: "P",
-          name: "Jalur Pria (Ikhwan)",
-          currentServing: maleCurrentServing ? maleCurrentServing.ticketNumber : "-",
-          currentRoom: maleCurrentServing?.roomName ?? "-",
-          waitingCount: maleWaiting.length,
-          inTherapyCount: maleInTherapy.length,
-          estimatedWaitMinutes: maleWaitEstimation.estimatedMinutes,
-          minEstimatedMinutes: maleWaitEstimation.minEstimatedMinutes,
-          maxEstimatedMinutes: maleWaitEstimation.maxEstimatedMinutes,
+  const rooms = RuntimeQueueStore.getRooms();
+  const stats = RuntimeQueueStore.getDashboardStats();
+
+  return NextResponse.json(
+    {
+      success: true,
+      data: {
+        queues: filtered,
+        allQueues,
+        rooms,
+        stats,
+        lanes: {
+          male: {
+            code: "P",
+            name: "Jalur Pria (Ikhwan)",
+            currentServing: maleCurrentServing ? maleCurrentServing.ticketNumber : "-",
+            currentRoom: maleCurrentServing?.roomName ?? "-",
+            waitingCount: maleWaiting.length,
+            inTherapyCount: maleInTherapy.length,
+            estimatedWaitMinutes: maleWaitEstimation.estimatedMinutes,
+            minEstimatedMinutes: maleWaitEstimation.minEstimatedMinutes,
+            maxEstimatedMinutes: maleWaitEstimation.maxEstimatedMinutes,
+          },
+          female: {
+            code: "W",
+            name: "Jalur Wanita (Akhwat)",
+            currentServing: femaleCurrentServing ? femaleCurrentServing.ticketNumber : "-",
+            currentRoom: femaleCurrentServing?.roomName ?? "-",
+            waitingCount: femaleWaiting.length,
+            inTherapyCount: femaleInTherapy.length,
+            estimatedWaitMinutes: femaleWaitEstimation.estimatedMinutes,
+            minEstimatedMinutes: femaleWaitEstimation.minEstimatedMinutes,
+            maxEstimatedMinutes: femaleWaitEstimation.maxEstimatedMinutes,
+          },
         },
-        female: {
-          code: "W",
-          name: "Jalur Wanita (Akhwat)",
-          currentServing: femaleCurrentServing ? femaleCurrentServing.ticketNumber : "-",
-          currentRoom: femaleCurrentServing?.roomName ?? "-",
-          waitingCount: femaleWaiting.length,
-          inTherapyCount: femaleInTherapy.length,
-          estimatedWaitMinutes: femaleWaitEstimation.estimatedMinutes,
-          minEstimatedMinutes: femaleWaitEstimation.minEstimatedMinutes,
-          maxEstimatedMinutes: femaleWaitEstimation.maxEstimatedMinutes,
-        },
+        updatedAt: new Date().toISOString(),
       },
-      updatedAt: new Date().toISOString(),
     },
-  });
+    {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    }
+  );
 }
 
 export async function POST(req: NextRequest) {
@@ -105,8 +115,8 @@ export async function POST(req: NextRequest) {
 
     // Compute next sequence number per lane
     const prefix = gender === "MALE" ? "P" : "W";
-    const sameLaneTickets = runtimeQueues.filter((q) => q.lane === gender);
-    const nextSeq = sameLaneTickets.length + 1;
+    const existingSameLane = RuntimeQueueStore.getQueues(gender);
+    const nextSeq = existingSameLane.length + 1;
     const ticketNumber = `${prefix}-${String(nextSeq).padStart(3, "0")}`;
 
     // Cryptographically unique secret token for public ticket url
@@ -114,7 +124,7 @@ export async function POST(req: NextRequest) {
     const secretToken = `tk_${ticketNumber.toLowerCase().replace("-", "")}_${randomHex}`;
 
     // Calculate queue wait position
-    const waitingSameLane = sameLaneTickets.filter((q) => q.status === "WAITING");
+    const waitingSameLane = existingSameLane.filter((q) => q.status === "WAITING");
     const peopleAhead = waitingSameLane.length;
     const waitEst = calculateEstimatedWait(peopleAhead, {
       lane: gender,
@@ -145,12 +155,17 @@ export async function POST(req: NextRequest) {
       maskedPatientName: maskedName,
     };
 
-    runtimeQueues.push(newTicket);
+    RuntimeQueueStore.addQueue(newTicket, {
+      patientName: fullName,
+      patientPhone: phone,
+      serviceId,
+    });
 
     return NextResponse.json({
       success: true,
       message: `Pendaftaran berhasil. Nomor antrean Anda: ${ticketNumber}`,
       data: {
+        id: newTicket.id,
         ticketNumber,
         secretToken,
         lane: gender,
@@ -174,3 +189,86 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const validated = statusTransitionSchema.safeParse(body);
+
+    if (!validated.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Payload status transition tidak valid",
+          details: validated.error.flatten().fieldErrors,
+        },
+        { status: 400 }
+      );
+    }
+
+    const { queueId, status, roomName, roomNumber, therapistName, actor, reason } =
+      validated.data;
+
+    const updated = RuntimeQueueStore.updateQueueStatus(queueId, status, {
+      roomName: roomName ?? undefined,
+      roomNumber: roomNumber ?? undefined,
+      therapistName: therapistName ?? undefined,
+      actor: actor ?? "Petugas Klinik",
+      reason: reason ?? undefined,
+    });
+
+    if (!updated) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Antrean dengan ID atau nomor ${queueId} tidak ditemukan.`,
+        },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `Status antrean ${updated.ticketNumber} berhasil diperbarui menjadi ${status}.`,
+      data: {
+        queue: updated,
+        rooms: RuntimeQueueStore.getRooms(),
+        stats: RuntimeQueueStore.getDashboardStats(),
+      },
+    });
+  } catch (error) {
+    console.error("Queue status update error:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Terjadi kesalahan server saat memperbarui status antrean.",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE() {
+  try {
+    RuntimeQueueStore.clearAllQueues();
+    return NextResponse.json({
+      success: true,
+      message: "Seluruh data antrean, bilik terapi, rekam medis, dan transaksi berhasil dibersihkan.",
+      data: {
+        queues: [],
+        rooms: RuntimeQueueStore.getRooms(),
+        stats: RuntimeQueueStore.getDashboardStats(),
+      },
+    });
+  } catch (error) {
+    console.error("Clear queues error:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Gagal membersihkan data antrean.",
+      },
+      { status: 500 }
+    );
+  }
+}
+

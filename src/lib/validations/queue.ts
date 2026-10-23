@@ -46,7 +46,7 @@ export const ticketLookupSchema = z.object({
 export type TicketLookupInput = z.infer<typeof ticketLookupSchema>;
 
 export const statusTransitionSchema = z.object({
-  queueId: z.string().uuid("ID antrean tidak valid"),
+  queueId: z.string().min(1, "ID antrean tidak valid"),
   status: z.enum([
     "WAITING",
     "CALLED",
@@ -55,8 +55,12 @@ export const statusTransitionSchema = z.object({
     "CANCELLED",
     "NO_SHOW",
   ]),
-  roomId: z.string().uuid().optional().nullable(),
-  therapistId: z.string().uuid().optional().nullable(),
+  roomId: z.string().optional().nullable(),
+  roomName: z.string().optional().nullable(),
+  roomNumber: z.number().optional().nullable(),
+  therapistId: z.string().optional().nullable(),
+  therapistName: z.string().optional().nullable(),
+  actor: z.string().optional(),
   reason: z.string().max(250).optional(),
 });
 

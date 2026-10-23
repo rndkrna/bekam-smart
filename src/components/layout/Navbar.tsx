@@ -96,13 +96,13 @@ export function Navbar() {
               Profil Klinik
             </Link>
             <Link
-              href="/#antrean-live"
+              href="/antrean#antrean"
               className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-teal-600 dark:text-slate-300 dark:hover:text-teal-400 transition-colors rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               Antrean Live
             </Link>
             <Link
-              href="/#layanan"
+              href="/antrean#layanan"
               className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-teal-600 dark:text-slate-300 dark:hover:text-teal-400 transition-colors rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               Paket Layanan
@@ -136,8 +136,8 @@ export function Navbar() {
               Cek Tiket Saya
             </Button>
 
-            <Link href="/#registrasi">
-              <Button size="sm" className="gap-1.5 font-semibold">
+            <Link href="/antrean#form-antrean">
+              <Button size="sm" className="gap-1.5 font-semibold bg-teal-700 hover:bg-teal-800 text-white">
                 <PlusCircle className="h-4 w-4" />
                 Daftar Antrean
               </Button>
@@ -178,14 +178,14 @@ export function Navbar() {
               Profil Klinik
             </Link>
             <Link
-              href="/#antrean-live"
+              href="/antrean#antrean"
               onClick={() => setIsMobileMenuOpen(false)}
               className="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
             >
               Antrean Live
             </Link>
             <Link
-              href="/#layanan"
+              href="/antrean#layanan"
               onClick={() => setIsMobileMenuOpen(false)}
               className="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
             >
@@ -218,11 +218,11 @@ export function Navbar() {
             </Link>
             <div className="pt-2">
               <Link
-                href="/#registrasi"
+                href="/antrean#form-antrean"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="block w-full"
               >
-                <Button className="w-full gap-2">
+                <Button className="w-full gap-2 bg-teal-700 hover:bg-teal-800 text-white">
                   <PlusCircle className="h-4 w-4" />
                   Daftar Antrean Online
                 </Button>

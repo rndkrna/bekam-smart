@@ -27,10 +27,10 @@ export default function PublicQueueBoardPage() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [isRefreshing, setIsRefreshing] = React.useState(false);
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
+  const handleRefresh = React.useCallback(async (silent: boolean = false) => {
+    if (!silent) setIsRefreshing(true);
     try {
-      const res = await fetch("/api/queues");
+      const res = await fetch("/api/queues", { cache: "no-store" });
       if (res.ok) {
         const json = await res.json();
         if (json.data?.queues) {
@@ -40,9 +40,17 @@ export default function PublicQueueBoardPage() {
     } catch {
       // Fallback
     } finally {
-      setTimeout(() => setIsRefreshing(false), 400);
+      if (!silent) {
+        setTimeout(() => setIsRefreshing(false), 400);
+      }
     }
-  };
+  }, []);
+
+  React.useEffect(() => {
+    handleRefresh(true);
+    const interval = setInterval(() => handleRefresh(true), 3000);
+    return () => clearInterval(interval);
+  }, [handleRefresh]);
 
   const filtered = queues.filter((q) => {
     if (laneFilter !== "ALL" && q.lane !== laneFilter) return false;
@@ -85,7 +93,7 @@ export default function PublicQueueBoardPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleRefresh}
+                onClick={() => handleRefresh(false)}
                 disabled={isRefreshing}
                 className="gap-1.5"
               >

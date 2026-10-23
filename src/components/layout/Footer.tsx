@@ -63,7 +63,18 @@ export function Footer() {
             <ul className="space-y-2.5 text-xs text-slate-400">
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 shrink-0 text-teal-400 mt-0.5" />
-                <span>Jl. Indunsuri No. 116C, Taman Kota, Desa Teluk Sasah, Kec. Seri Kuala Lobam, Kab. Bintan (Tanjung Uban & sekitarnya)</span>
+                <div>
+                  <span>Jl. Indunsuri No. 116C, Taman Kota, Desa Teluk Sasah, Kec. Seri Kuala Lobam, Kab. Bintan (Tanjung Uban & sekitarnya)</span>
+                  <a
+                    href="https://share.google/eaQgQIzNPtGp7UVtq"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-[11px] font-bold text-teal-400 hover:text-teal-300 mt-1"
+                  >
+                    <span>Buka Rute di Google Maps</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
               </li>
               <li className="flex items-center gap-2">
                 <Clock className="h-4 w-4 shrink-0 text-teal-400" />
@@ -91,12 +102,12 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/#antrean-live" className="hover:text-teal-400 transition-colors">
+                <Link href="/antrean#antrean" className="hover:text-teal-400 transition-colors">
                   Pantau Antrean Live
                 </Link>
               </li>
               <li>
-                <Link href="/#layanan" className="hover:text-teal-400 transition-colors">
+                <Link href="/antrean#layanan" className="hover:text-teal-400 transition-colors">
                   Katalog Paket Bekam & Harga
                 </Link>
               </li>

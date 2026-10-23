@@ -297,16 +297,25 @@ function TicketContent() {
                     </ul>
                   </div>
 
-                  {/* Action Sharing Buttons */}
-                  <div className="pt-2 flex flex-col sm:flex-row gap-3">
+                  {/* Action Sharing & Navigation Buttons */}
+                  <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
                     <Button
                       variant="secondary"
                       onClick={handleShare}
                       className="flex-1 gap-2 text-xs"
                     >
                       <Share2 className="h-4 w-4 text-teal-600" />
-                      {copied ? "Link Tersalin ke Clipboard!" : "Salin Link Tiket Ini"}
+                      {copied ? "Link Tersalin ke Clipboard!" : "Salin Link Tiket"}
                     </Button>
+                    <a
+                      href="https://share.google/eaQgQIzNPtGp7UVtq"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-teal-300 dark:border-teal-800 bg-teal-50/60 dark:bg-teal-950/40 px-3.5 py-2 text-xs font-semibold text-teal-800 dark:text-teal-300 hover:bg-teal-100 transition-colors"
+                    >
+                      <MapPin className="h-3.5 w-3.5 text-teal-600" />
+                      Rute Maps
+                    </a>
                     <Button
                       variant="outline"
                       onClick={handleManualRefresh}

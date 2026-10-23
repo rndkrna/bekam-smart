@@ -1,53 +1,14 @@
 // Prisma schema for Bekam Smart Queue
 // Clinic Queue Management, Therapy Operations, Billing & Display System
+// Provider: SQLite (Local file database: dev.db)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-enum UserRole {
-  ADMIN
-  THERAPIST
-  CASHIER
-}
-
-enum GenderLane {
-  MALE    // Lane P (Pria / Ikhwan)
-  FEMALE  // Lane W (Wanita / Akhwat)
-}
-
-enum QueueStatus {
-  WAITING      // Menunggu di ruang tunggu
-  CALLED       // Dipanggil ke ruang terapi
-  IN_THERAPY   // Sedang dalam tindakan bekam
-  COMPLETED    // Selesai terapi / Menunggu pembayaran
-  CANCELLED    // Dibatalkan pasien/klinik
-  NO_SHOW      // Tidak hadir setelah dipanggil berkala
-}
-
-enum RoomStatus {
-  AVAILABLE    // Siap digunakan
-  OCCUPIED     // Sedang dipakai terapi
-  CLEANING     // Sterilisasi / Pembersihan cup & linen
-  MAINTENANCE  // Perbaikan / Tidak aktif
-}
-
-enum PaymentStatus {
-  PENDING
-  PAID
-  REFUNDED
-}
-
-enum PaymentMethod {
-  CASH
-  QRIS
-  TRANSFER
-  DEBIT
 }
 
 // -------------------------------------------------------------
@@ -55,33 +16,34 @@ enum PaymentMethod {
 // -------------------------------------------------------------
 
 model Clinic {
-  id              String   @id @default(uuid())
-  name            String   @default("Klinik Bekam Nabawi Care")
-  tagline         String   @default("Layanan Hijamah & Terapi Komplementer Sesuai Sunnah & Standar Higienis Medis")
-  phone           String   @default("+62 812-3456-7890")
-  address         String   @default("Jl. Sehat Nabawi No. 7, Jakarta Timur")
-  openingHour     String   @default("08:00")
-  closingHour     String   @default("17:00")
-  isRegistrationOpen Boolean @default(true)
-  maleQueuePrefix   String   @default("P")
-  femaleQueuePrefix String   @default("W")
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                 String   @id @default(uuid())
+  name               String   @default("Bekam Bintan Therapy")
+  tagline            String   @default("Pusat Pengobatan Sunnah Thibbun Nabawi & Bekam Steril Higienis Berizin Dinkes Bintan")
+  phone              String   @default("+62 812-6832-0072")
+  address            String   @default("Jl. Indunsuri No. 116C, Taman Kota, Desa Teluk Sasah, Kec. Seri Kuala Lobam, Kab. Bintan")
+  openingHour        String   @default("09:00")
+  closingHour        String   @default("22:00")
+  isRegistrationOpen Boolean  @default(true)
+  maleQueuePrefix    String   @default("P")
+  femaleQueuePrefix  String   @default("W")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model Room {
-  id            String       @id @default(uuid())
-  roomNumber    Int          @unique
-  name          String       // e.g. "Ruang Terapi 1 (Ikhwan)"
-  laneType      GenderLane   // MALE or FEMALE
-  status        RoomStatus   @default(AVAILABLE)
-  capacity      Int          @default(1)
-  isSterilized  Boolean      @default(true)
-  currentQueueId String?     // Link to currently served ticket
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id             String        @id @default(uuid())
+  roomNumber     Int           @unique
+  name           String        // e.g. "Ruang Terapi 1 (Ikhwan)"
+  laneType       String        @default("MALE") // "MALE" or "FEMALE"
+  status         String        @default("AVAILABLE") // "AVAILABLE", "OCCUPIED", "CLEANING", "MAINTENANCE"
+  capacity       Int           @default(1)
+  isSterilized   Boolean       @default(true)
+  currentQueueId String?       // Link to currently served ticket
+  therapistName  String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
-  queueTickets  QueueTicket[]
+  queueTickets   QueueTicket[]
 }
 
 // -------------------------------------------------------------
@@ -89,16 +51,16 @@ model Room {
 // -------------------------------------------------------------
 
 model User {
-  id           String      @id @default(uuid())
+  id           String          @id @default(uuid())
   name         String
-  email        String      @unique
+  email        String          @unique
   passwordHash String
-  role         UserRole    @default(THERAPIST)
-  gender       GenderLane  // Pria hanya melayani Ikhwan, Wanita melayani Akhwat
+  role         String          @default("THERAPIST") // "ADMIN", "THERAPIST", "CASHIER"
+  gender       String          @default("MALE") // "MALE" (Ikhwan) or "FEMALE" (Akhwat)
   phone        String?
-  isActive     Boolean     @default(true)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
   assignedQueues QueueTicket[]
   auditLogs      QueueAuditLog[]
@@ -110,12 +72,12 @@ model User {
 
 model Service {
   id              String        @id @default(uuid())
-  name            String        // e.g. "Bekam Sunnah Punggung & Bahu"
+  name            String        // e.g. "Terapi Bekam Steril (Titik Sunnah & Keluhan)"
   slug            String        @unique
-  category        String        @default("Bekam Medik")
+  category        String        @default("Terapi Bekam")
   description     String
-  durationMinutes Int           @default(45) // Estimasi durasi per sesi
-  cupQuantity     Int           @default(10) // Rata-rata jumlah kop bekam
+  durationMinutes Int           @default(45)
+  cupQuantity     Int           @default(10)
   price           Int           // IDR integer (e.g. 85000)
   isPopular       Boolean       @default(false)
   isActive        Boolean       @default(true)
@@ -130,16 +92,16 @@ model Service {
 // -------------------------------------------------------------
 
 model Patient {
-  id               String       @id @default(uuid())
+  id               String        @id @default(uuid())
   fullName         String
   phone            String
-  gender           GenderLane
+  gender           String        @default("MALE") // "MALE" or "FEMALE"
   age              Int?
-  bloodType        String?      // A, B, AB, O
+  bloodType        String?       // A, B, AB, O
   emergencyContact String?
   notes            String?
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   queueTickets     QueueTicket[]
 
@@ -147,45 +109,45 @@ model Patient {
 }
 
 model QueueTicket {
-  id                  String           @id @default(uuid())
-  ticketNumber        String           // e.g. "P-001", "W-004"
-  lane                GenderLane       // MALE / FEMALE
-  sequenceNumber      Int              // Daily sequence (1, 2, 3...)
-  queueDate           DateTime         @default(now()) @db.Date
-  secretToken         String           @unique // Cryptographic UUID for public lookup without PII
-  status              QueueStatus      @default(WAITING)
-  priority            Int              @default(0) // Higher value = priority (e.g. elderly)
+  id                   String            @id @default(uuid())
+  ticketNumber         String            @unique // e.g. "P-001", "W-004"
+  lane                 String            @default("MALE") // "MALE" or "FEMALE"
+  sequenceNumber       Int               // Daily sequence (1, 2, 3...)
+  queueDate            DateTime          @default(now())
+  secretToken          String            @unique // Cryptographic UUID for public lookup without PII
+  status               String            @default("WAITING") // "WAITING", "CALLED", "IN_THERAPY", "COMPLETED", "CANCELLED", "NO_SHOW"
+  priority             Int               @default(0) // Higher value = priority (e.g. elderly)
 
   // Relations
-  patientId           String
-  patient             Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  
-  serviceId           String
-  service             Service          @relation(fields: [serviceId], references: [id])
-  
-  roomId              String?
-  room                Room?            @relation(fields: [roomId], references: [id])
-  
-  therapistId         String?
-  therapist           User?            @relation(fields: [therapistId], references: [id])
+  patientId            String
+  patient              Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  serviceId            String
+  service              Service           @relation(fields: [serviceId], references: [id])
+
+  roomId               String?
+  room                 Room?             @relation(fields: [roomId], references: [id])
+
+  therapistId          String?
+  therapist            User?             @relation(fields: [therapistId], references: [id])
 
   // Operational Timestamps
-  checkInTime         DateTime         @default(now())
-  calledTime          DateTime?
-  therapyStartTime    DateTime?
-  therapyEndTime      DateTime?
-  
+  checkInTime          DateTime          @default(now())
+  calledTime           DateTime?
+  therapyStartTime     DateTime?
+  therapyEndTime       DateTime?
+
   // Real-time dynamic wait estimation
-  estimatedWaitMinutes Int             @default(30)
-  callCount           Int              @default(0) // Voice callout counter
+  estimatedWaitMinutes Int               @default(30)
+  callCount            Int               @default(0) // Voice callout counter
 
   // Sub-records
-  medicalScreening    MedicalScreening?
-  billing             Billing?
-  auditLogs           QueueAuditLog[]
+  medicalScreening     MedicalScreening?
+  billing              Billing?
+  auditLogs            QueueAuditLog[]
 
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
 
   @@index([queueDate, status, lane])
   @@index([ticketNumber])
@@ -197,28 +159,28 @@ model QueueTicket {
 // -------------------------------------------------------------
 
 model MedicalScreening {
-  id                    String      @id @default(uuid())
-  queueTicketId         String      @unique
-  queueTicket           QueueTicket @relation(fields: [queueTicketId], references: [id], onDelete: Cascade)
+  id                   String      @id @default(uuid())
+  queueTicketId        String      @unique
+  queueTicket          QueueTicket @relation(fields: [queueTicketId], references: [id], onDelete: Cascade)
 
   // Vital Signs
-  systolicBP            Int         // mmHg (Tekanan Darah Sistolik)
-  diastolicBP           Int         // mmHg (Tekanan Darah Diastolik)
-  bloodSugarMgDl        Int?        // Optional GDS
-  pulseRateBpm          Int?        // Denyut nadi per menit
-  
+  systolicBP           Int         // mmHg (Tekanan Darah Sistolik)
+  diastolicBP          Int         // mmHg (Tekanan Darah Diastolik)
+  bloodSugarMgDl       Int?        // Optional GDS
+  pulseRateBpm         Int?        // Denyut nadi per menit
+
   // Contraindication Checklist (Standar PBI / Asosiasi Bekam Indonesia)
-  hasHemophilia         Boolean     @default(false)
-  hasSevereAnemia       Boolean     @default(false)
-  isTakingBloodThinner  Boolean     @default(false) // Obat pengencer darah (Aspirin, Warfarin)
-  isPregnant            Boolean     @default(false) // Kontraindikasi titik tertentu
-  hasAcuteInfection     Boolean     @default(false)
-  hasLowBloodPressure   Boolean     @default(false)
-  
-  complaints            String?     // Keluhan utama (Pegal, migrain, asam urat, dll)
-  isEligibleForCupping  Boolean     @default(true)
-  screeningNotes        String?
-  screenedAt            DateTime    @default(now())
+  hasHemophilia        Boolean     @default(false)
+  hasSevereAnemia      Boolean     @default(false)
+  isTakingBloodThinner Boolean     @default(false) // Obat pengencer darah (Aspirin, Warfarin)
+  isPregnant           Boolean     @default(false) // Kontraindikasi titik tertentu
+  hasAcuteInfection    Boolean     @default(false)
+  hasLowBloodPressure  Boolean     @default(false)
+
+  complaints           String?     // Keluhan utama (Pegal, migrain, asam urat, dll)
+  isEligibleForCupping Boolean     @default(true)
+  screeningNotes       String?
+  screenedAt           DateTime    @default(now())
 }
 
 // -------------------------------------------------------------
@@ -226,23 +188,23 @@ model MedicalScreening {
 // -------------------------------------------------------------
 
 model Billing {
-  id              String        @id @default(uuid())
-  queueTicketId   String        @unique
-  queueTicket     QueueTicket   @relation(fields: [queueTicketId], references: [id], onDelete: Cascade)
-  
-  invoiceNumber   String        @unique // e.g. "INV-20261020-P001"
-  serviceFee      Int           // IDR
-  herbFee         Int           @default(0) // Biaya minyak habbatussauda/zaitun tambahan
-  discount        Int           @default(0)
-  totalAmount     Int           // Final payable IDR
-  
-  paymentStatus   PaymentStatus @default(PENDING)
-  paymentMethod   PaymentMethod @default(CASH)
-  paidAt          DateTime?
-  cashierNotes    String?
+  id            String        @id @default(uuid())
+  queueTicketId String        @unique
+  queueTicket   QueueTicket   @relation(fields: [queueTicketId], references: [id], onDelete: Cascade)
 
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  invoiceNumber String        @unique // e.g. "INV-20261020-P001"
+  serviceFee    Int           // IDR
+  herbFee       Int           @default(0) // Biaya minyak habbatussauda/zaitun tambahan
+  discount      Int           @default(0)
+  totalAmount   Int           // Final payable IDR
+
+  paymentStatus String        @default("PENDING") // "PENDING", "PAID", "REFUNDED"
+  paymentMethod String        @default("CASH") // "CASH", "QRIS", "TRANSFER", "DEBIT"
+  paidAt        DateTime?
+  cashierNotes  String?
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 // -------------------------------------------------------------
@@ -250,14 +212,14 @@ model Billing {
 // -------------------------------------------------------------
 
 model QueueAuditLog {
-  id            String       @id @default(uuid())
+  id            String      @id @default(uuid())
   queueTicketId String
-  queueTicket   QueueTicket  @relation(fields: [queueTicketId], references: [id], onDelete: Cascade)
-  
-  fromStatus    QueueStatus?
-  toStatus      QueueStatus
+  queueTicket   QueueTicket @relation(fields: [queueTicketId], references: [id], onDelete: Cascade)
+
+  fromStatus    String?
+  toStatus      String      @default("WAITING")
   actorId       String?
-  actor         User?        @relation(fields: [actorId], references: [id])
+  actor         User?       @relation(fields: [actorId], references: [id])
   reason        String?
-  timestamp     DateTime     @default(now())
+  timestamp     DateTime    @default(now())
 }
