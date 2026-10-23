@@ -77,74 +77,71 @@ async function main() {
   console.log(`✓ 4 Bilik Terapi (2 Ikhwan, 2 Akhwat) berhasil disinkronkan.`);
 
   // 3. Seed Services & Pricing (bekambintan.blogspot.com)
+  // 3. Seed Services & Pricing (bekam basah, bekam kering, alfasdhu, gurah, lintah)
   const servicesData = [
     {
       id: "srv-01",
-      name: "Terapi Bekam Steril (Titik Sunnah & Keluhan)",
-      slug: "terapi-bekam-steril",
+      name: "Bekam Basah",
+      slug: "bekam-basah",
       category: "Terapi Bekam",
-      description:
-        "Tindakan hijamah basah higienis titik sunnah Al-Kahil, Al-Akhda'ain, dan belikat/pinggang. 100% menggunakan jarum & kop steril sekali pakai berstandar medis.",
-      durationMinutes: 45,
-      cupQuantity: 12,
-      price: 85000,
+      description: "Terapi bekam basah titik sunnah dan keluhan dengan kop & jarum steril.",
+      durationMinutes: 40,
+      cupQuantity: 10,
+      price: 100000,
       isPopular: true,
     },
     {
       id: "srv-02",
-      name: "Terapi AL Fashdu (Pengeluaran Darah Vena)",
-      slug: "terapi-al-fashdu",
+      name: "Bekam Kering",
+      slug: "bekam-kering",
+      category: "Terapi Bekam",
+      description: "Terapi pelepasan angin dan relaksasi otot tanpa sayatan jarum.",
+      durationMinutes: 40,
+      cupQuantity: 10,
+      price: 50000,
+      isPopular: false,
+    },
+    {
+      id: "srv-03",
+      name: "Al-Fashdu",
+      slug: "al-fashdu",
       category: "Al Fashdu",
-      description:
-        "Pengobatan sunnah Nabawi dengan metode pengeluaran darah melalui pembuluh vena tertentu untuk membersihkan penyumbatan dan racun tubuh.",
-      durationMinutes: 30,
+      description: "Pengeluaran darah vena untuk melancarkan sirkulasi pembuluh darah besar.",
+      durationMinutes: 60,
       cupQuantity: 0,
       price: 100000,
       isPopular: true,
     },
     {
-      id: "srv-03",
-      name: "Terapi Lintah Medis (Hirudo Medicinalis)",
-      slug: "terapi-lintah-medis",
-      category: "Terapi Lintah",
-      description:
-        "Terapi lintah medis bersertifikat yang kaya enzim Hirudin alami untuk melancarkan sirkulasi darah mikro, mengatasi benjolan, dan peradangan sendi.",
-      durationMinutes: 45,
-      cupQuantity: 4,
-      price: 95000,
-      isPopular: false,
-    },
-    {
       id: "srv-04",
-      name: "Terapi Gurah Hidung Tetes Herbal",
-      slug: "terapi-gurah-hidung",
+      name: "Gurah Hidung",
+      slug: "gurah-hidung",
       category: "Gurah Hidung",
-      description:
-        "Terapi tradisional tetes ramuan herbal alami ke hidung untuk menguras lendir kotor, dahak pekat, dan kotoran pada saluran pernapasan.",
-      durationMinutes: 30,
+      description: "Terapi tetes herbal alami pembersih lendir saluran pernapasan.",
+      durationMinutes: 120,
       cupQuantity: 0,
-      price: 75000,
+      price: 100000,
       isPopular: false,
     },
     {
       id: "srv-05",
-      name: "Layanan Home Care (Kunjung ke Rumah)",
-      slug: "layanan-home-care",
-      category: "Home Care",
-      description:
-        "Layanan terapis profesional datang langsung ke rumah pasien untuk wilayah Tanjung Uban, Seri Kuala Lobam, dan sekitarnya dengan perjanjian terlebih dahulu.",
+      name: "Terapi Lintah Medis",
+      slug: "terapi-lintah-medis",
+      category: "Terapi Lintah",
+      description: "Aplikasi lintah medis steril kaya enzim Hirudin alami (Rp 25.000 / ekor).",
       durationMinutes: 60,
-      cupQuantity: 12,
-      price: 135000,
+      cupQuantity: 1,
+      price: 25000,
       isPopular: false,
     },
   ];
 
   for (const s of servicesData) {
     await prisma.service.upsert({
-      where: { slug: s.slug },
+      where: { id: s.id },
       update: {
         name: s.name,
+        slug: s.slug,
         category: s.category,
         description: s.description,
         durationMinutes: s.durationMinutes,

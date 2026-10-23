@@ -1213,7 +1213,7 @@ export default function AdminDashboardPage() {
                 >
                   {INITIAL_SERVICES.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.name} ({s.durationMinutes}m) - {formatIDR(s.price)}
+                      {s.name} ({s.durationLabel || `${s.durationMinutes}m`}) - {formatIDR(s.price)}{s.priceUnit ? ` ${s.priceUnit}` : ""}
                     </option>
                   ))}
                 </select>

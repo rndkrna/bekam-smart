@@ -433,14 +433,14 @@ export default function AntreanOnlinePage() {
                   <div className="mt-3 flex items-center text-xs text-slate-600 font-medium">
                     <span className="flex items-center gap-1">
                       <Clock className="h-3.5 w-3.5 text-teal-600" />
-                      {s.durationMinutes} Menit
+                      {s.durationLabel || `${s.durationMinutes} Menit`}
                     </span>
                   </div>
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
                   <span className="text-base font-extrabold text-slate-900">
-                    {formatIDR(s.price)}
+                    {formatIDR(s.price)}{s.priceUnit ? ` ${s.priceUnit}` : ""}
                   </span>
                   <button
                     type="button"
@@ -601,7 +601,7 @@ export default function AntreanOnlinePage() {
                   >
                     {INITIAL_SERVICES.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.name} — {formatIDR(s.price)} ({s.durationMinutes} Menit)
+                        {s.name} — {formatIDR(s.price)}{s.priceUnit ? ` ${s.priceUnit}` : ""} ({s.durationLabel || `${s.durationMinutes} Menit`})
                       </option>
                     ))}
                   </select>

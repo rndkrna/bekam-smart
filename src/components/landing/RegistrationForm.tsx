@@ -338,15 +338,15 @@ export function RegistrationForm({ initialServiceId }: RegistrationFormProps) {
                   >
                     {INITIAL_SERVICES.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.name} — {formatIDR(s.price)} ({s.durationMinutes} Menit)
+                        {s.name} — {formatIDR(s.price)}{s.priceUnit ? ` ${s.priceUnit}` : ""} ({s.durationLabel || `${s.durationMinutes} Menit`})
                       </option>
                     ))}
                   </select>
                   {selectedServiceObj && (
-                    <div className="mt-2 rounded-lg bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-800/60 dark:text-slate-400 flex items-center justify-between">
-                      <span>{selectedServiceObj.description}</span>
+                    <div className="mt-2 rounded-lg bg-teal-50/60 p-3 text-xs text-teal-900 dark:bg-slate-800/60 dark:text-teal-300 flex items-center justify-between">
+                      <span className="font-medium">Waktu: {selectedServiceObj.durationLabel || `${selectedServiceObj.durationMinutes} Menit`}</span>
                       <span className="font-bold text-teal-700 dark:text-teal-400 whitespace-nowrap ml-2">
-                        {formatIDR(selectedServiceObj.price)}
+                        {formatIDR(selectedServiceObj.price)}{selectedServiceObj.priceUnit ? ` ${selectedServiceObj.priceUnit}` : ""}
                       </span>
                     </div>
                   )}

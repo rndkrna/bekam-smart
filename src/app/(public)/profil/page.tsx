@@ -679,12 +679,12 @@ export default function CompanyProfilePage() {
                       <p className="text-[11px] font-bold text-teal-700">{s.category}</p>
                       <h3 className="truncate text-sm font-bold text-slate-900">{s.name}</h3>
                       <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-500">
-                        <Clock className="h-3.5 w-3.5" />
-                        {s.durationMinutes} menit • {s.cupQuantity} kop
+                        <Clock className="h-3.5 w-3.5 text-teal-600" />
+                        {s.durationLabel || `${s.durationMinutes} menit`}
                       </p>
                     </div>
                     <p className="shrink-0 text-base font-black text-slate-900">
-                      {formatIDR(s.price)}
+                      {formatIDR(s.price)}{s.priceUnit ? ` ${s.priceUnit}` : ""}
                     </p>
                   </div>
                 ))}
