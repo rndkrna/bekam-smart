@@ -44,3 +44,7 @@ next-env.d.ts
 *.db
 *.db-journal
 .runtime-queues.json
+
+# Lockfiles (let Vercel resolve Linux packages cleanly)
+package-lock.json
+
