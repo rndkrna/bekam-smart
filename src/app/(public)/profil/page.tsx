@@ -152,32 +152,32 @@ const MILESTONES = [
 
 const THERAPISTS = [
   {
-    name: "Ustadz Hasan",
-    role: "Kepala Terapis Ikhwan & Pengobat Utama",
-    exp: "15 tahun",
+    name: "Bpk. Sabarrudin",
+    role: "Kepala Terapis Ikhwan & Penanggung Jawab STPT",
+    exp: "15+ tahun",
     lane: "MALE" as const,
-    credential: "ITBI No. 000341 • Sertifikat Thibbun Nabawi",
+    credential: "STPT Dinkes Bintan 001 • DPP ITBI • Sertifikat ELPIKHI",
   },
   {
-    name: "Ummu Aisyah",
-    role: "Kepala Terapis Akhwat",
-    exp: "12 tahun",
+    name: "Ibu Ildawati",
+    role: "Kepala Terapis Akhwat (Wanita)",
+    exp: "12+ tahun",
     lane: "FEMALE" as const,
-    credential: "Praktisi Bekam & Gurah Muslimah Bersertifikat",
+    credential: "Praktisi Bekam Muslimah Bersertifikat ELPIKHI No. 012",
   },
   {
-    name: "Terapis Ikhwan Asisten",
-    role: "Terapis Bekam Steril & Al Fashdu",
-    exp: "7 tahun",
+    name: "Yudistira Pradana",
+    role: "Terapis Ikhwan & Asisten Layanan",
+    exp: "5+ tahun",
     lane: "MALE" as const,
-    credential: "Pelatihan Higienitas & Pengeluaran Darah Vena",
+    credential: "Sertifikasi Bekam Steril ELPIKHI No. 011",
   },
   {
-    name: "Terapis Akhwat Asisten",
+    name: "Asisten Terapis Muslimah",
     role: "Terapis Bekam & Gurah Hidung Wanita",
     exp: "6 tahun",
     lane: "FEMALE" as const,
-    credential: "Pelatihan Terapi Gurah Tradisional Herbal",
+    credential: "Pelatihan Terapi Higienitas & Gurah Herbal",
   },
 ];
 
@@ -747,6 +747,17 @@ export default function CompanyProfilePage() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="mt-10 text-center">
+              <Link
+                href="/legalitas"
+                className="group inline-flex items-center gap-2 rounded-xl bg-teal-700 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-teal-700/20 transition-all hover:bg-teal-800 hover:shadow-xl hover:shadow-teal-700/30"
+              >
+                <ShieldCheck className="h-4 w-4" />
+                Lihat 7 Salinan Dokumen &amp; Surat Izin Lengkap
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
             </div>
           </div>
         </section>

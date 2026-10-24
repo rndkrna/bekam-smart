@@ -12,6 +12,7 @@ import {
   Menu,
   X,
   PlusCircle,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TicketLookupModal } from "@/components/landing/TicketLookupModal";
@@ -47,10 +48,13 @@ export function Navbar() {
                 Praktek Setiap Hari: 09:00 - 22:00 WIB
               </span>
               <span className="text-teal-400">•</span>
-              <span className="flex items-center gap-1.5 text-teal-200">
+              <Link
+                href="/legalitas"
+                className="flex items-center gap-1.5 text-teal-200 hover:text-white transition-colors"
+              >
                 <Sparkles className="h-3.5 w-3.5 text-amber-300" />
                 STPT Dinkes Bintan No. 001/Yankes/Batra/VII/2013 • Anggota ITBI
-              </span>
+              </Link>
             </div>
             <div className="flex items-center gap-4 text-teal-200">
               <span>WA Pria: 0812-6832-0072 • WA Wanita: 0812-7530-2567</span>
@@ -94,6 +98,13 @@ export function Navbar() {
               className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-teal-600 dark:text-slate-300 dark:hover:text-teal-400 transition-colors rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               Profil Klinik
+            </Link>
+            <Link
+              href="/legalitas"
+              className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-teal-600 dark:text-slate-300 dark:hover:text-teal-400 transition-colors rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-1.5"
+            >
+              <ShieldCheck className="h-4 w-4 text-teal-600" />
+              Legalitas
             </Link>
             <Link
               href="/antrean#antrean"
@@ -176,6 +187,14 @@ export function Navbar() {
               className="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
             >
               Profil Klinik
+            </Link>
+            <Link
+              href="/legalitas"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+            >
+              <ShieldCheck className="h-4 w-4 text-teal-600" />
+              Legalitas &amp; Izin Resmi
             </Link>
             <Link
               href="/antrean#antrean"

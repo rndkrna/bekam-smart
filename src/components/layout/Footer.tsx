@@ -15,21 +15,30 @@ export function Footer() {
       {/* Top Banner Standards */}
       <div className="border-b border-slate-800 bg-slate-950/60 py-6 px-4">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-teal-500/10 p-2 text-teal-400 border border-teal-500/20">
+          <Link
+            href="/legalitas"
+            className="group flex items-center gap-3 transition-opacity hover:opacity-90"
+          >
+            <div className="rounded-xl bg-teal-500/10 p-2 text-teal-400 border border-teal-500/20 group-hover:border-teal-400">
               <ShieldCheck className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">
-                Terdaftar Resmi Dinkes Kab. Bintan & Ikatan Terapis Bekam Indonesia (ITBI)
+              <p className="text-sm font-semibold text-white group-hover:text-teal-300 transition-colors">
+                Terdaftar Resmi Dinkes Kab. Bintan &amp; Ikatan Terapis Bekam Indonesia (ITBI)
               </p>
               <p className="text-xs text-slate-400">
-                STPT No. 001/Yankes/Batra/VII/2013 • Anggota ITBI No. 000341.00014.0003293 • 100% Jarum & Kop Steril Sekali Pakai
+                STPT No. 001/Yankes/Batra/VII/2013 • Anggota ITBI No. 000341.00014.0003293 • 100% Jarum &amp; Kop Steril Sekali Pakai
               </p>
             </div>
-          </div>
+          </Link>
           <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span>Sesuai Tuntunan As-Sunnah Ash-Shahihah</span>
+            <Link
+              href="/legalitas"
+              className="text-teal-400 hover:text-teal-300 font-semibold flex items-center gap-1"
+            >
+              Lihat Bukti Izin &amp; Sertifikat
+              <ExternalLink className="h-3 w-3" />
+            </Link>
           </div>
         </div>
       </div>
@@ -99,6 +108,11 @@ export function Footer() {
               <li>
                 <Link href="/profil" className="hover:text-teal-400 transition-colors">
                   Profil Klinik & Tim Terapis
+                </Link>
+              </li>
+              <li>
+                <Link href="/legalitas" className="hover:text-teal-400 transition-colors font-medium text-teal-300">
+                  Legalitas & Izin Praktik Resmi
                 </Link>
               </li>
               <li>
