@@ -402,7 +402,7 @@ export default function AntreanOnlinePage() {
         </section>
 
         {/* 4. Katalog Paket Terapi & Tarif */}
-        <section id="layanan" className="scroll-mt-16">
+        <section id="layanan" className="scroll-mt-28">
           <div className="mb-4">
             <h2 className="text-lg font-bold text-slate-900 tracking-tight">
               Jenis Terapi dan Biaya
