@@ -122,7 +122,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/antrean#layanan" className="hover:text-teal-400 transition-colors">
-                  Katalog Paket Bekam & Harga
+                  Pilihan Terapi & Biaya
                 </Link>
               </li>
               <li>

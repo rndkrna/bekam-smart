@@ -86,7 +86,7 @@ export function Navbar() {
                 </span>
               </div>
               <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                Bekam Bintan Therapy • Tanjung Uban & Seri Kuala Lobam
+                Bekam Bintan Therapy • Untuk Wilayah Bintan
               </p>
             </div>
           </Link>

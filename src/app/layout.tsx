@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Bekam Bintan Therapy • Sistem Antrean & Terapi Thibbun Nabawi Bintan",
   description:
-    "Sistem antrean cerdas dual-lane (Ikhwan & Akhwat) Bekam Bintan Therapy. Pusat terapi bekam steril, al fashdu, terapi lintah medis, gurah hidung, dan home care Tanjung Uban & Seri Kuala Lobam.",
+    "Sistem antrean cerdas dual-lane (Ikhwan & Akhwat) Bekam Bintan Therapy. Pusat terapi bekam steril, al fashdu, terapi lintah medis, gurah hidung, dan home care untuk wilayah Bintan.",
   keywords: [
     "bekam bintan",
     "terapi bekam tanjung uban",

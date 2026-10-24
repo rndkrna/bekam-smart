@@ -301,7 +301,7 @@ export default function CompanyProfilePage() {
               >
                 Pusat terapi bekam steril, al fashdu, terapi lintah medis, dan gurah hidung di Kabupaten Bintan yang memadukan{" "}
                 <strong className="text-white">tuntunan As-Sunnah</strong>, standar alat steril sekali pakai, dan{" "}
-                <strong className="text-white">sistem antrean cerdas</strong> untuk wilayah Tanjung Uban & Seri Kuala Lobam.
+                <strong className="text-white">sistem antrean cerdas</strong> untuk wilayah Bintan.
               </p>
 
               <div

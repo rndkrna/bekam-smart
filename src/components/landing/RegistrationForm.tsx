@@ -329,7 +329,7 @@ export function RegistrationForm({ initialServiceId }: RegistrationFormProps) {
                 {/* 3. Paket Layanan Bekam */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                    Pilihan Jenis Terapi *
+                    Pilihan Terapi *
                   </label>
                   <select
                     value={serviceId}

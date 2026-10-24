@@ -192,15 +192,7 @@ export default function AntreanOnlinePage() {
           <p className="mt-1 text-xs font-bold text-teal-700">
             Balai Pengobatan Alami Thibbun Nabawi — Berdiri Sejak Tahun 2011 di Kab. Bintan
           </p>
-          <div className="my-3 p-3 bg-gradient-to-r from-teal-50 via-emerald-50 to-amber-50 rounded-xl border border-teal-200/80">
-            <p className="text-xs sm:text-sm font-bold text-slate-800 italic">
-              &ldquo;Biaya Terapi Pengobatan Kami Murah, Mujarab, Halal, dan Insya Allah Barokah.&rdquo;
-            </p>
-            <p className="text-[11px] text-slate-500 mt-1">
-              Melayani Pria & Wanita (Jalur Terpisah) • Muslim & Non-Muslim • Buka Setiap Hari: 09:00 – 22:00 WIB
-            </p>
-          </div>
-          <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+          <p className="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
             Daftar antrean terapi bekam steril, al fashdu, lintah medis, gurah hidung, dan home care dari mana saja tanpa ribet buat akun. Tersedia terapis khusus <strong>Ikhwan (Pria)</strong> dan <strong>Akhwat (Wanita)</strong>.
           </p>
           <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-xs">
@@ -592,7 +584,7 @@ export default function AntreanOnlinePage() {
                 {/* Paket Layanan */}
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">
-                    Pilihan Jenis Terapi *
+                    Pilihan Terapi *
                   </label>
                   <select
                     value={serviceId}
