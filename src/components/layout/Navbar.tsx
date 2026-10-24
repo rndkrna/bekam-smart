@@ -116,7 +116,7 @@ export function Navbar() {
               href="/antrean#layanan"
               className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-teal-600 dark:text-slate-300 dark:hover:text-teal-400 transition-colors rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
             >
-              Paket Layanan
+              Jenis Terapi & Biaya
             </Link>
             <Link
               href="/queue-board"
@@ -208,7 +208,7 @@ export function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
               className="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              Paket Layanan
+              Jenis Terapi & Biaya
             </Link>
             <Link
               href="/queue-board"

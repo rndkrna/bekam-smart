@@ -405,7 +405,7 @@ export default function AntreanOnlinePage() {
         <section id="layanan" className="scroll-mt-16">
           <div className="mb-4">
             <h2 className="text-lg font-bold text-slate-900 tracking-tight">
-              Pilihan Paket Layanan & Biaya
+              Jenis Terapi dan Biaya
             </h2>
             <p className="text-xs text-slate-500">
               Biaya sudah termasuk konsultasi tensi darah, minyak zaitun murni, dan jarum/kop steril baru.
@@ -447,7 +447,7 @@ export default function AntreanOnlinePage() {
                     onClick={() => selectServiceAndScroll(s.id)}
                     className="text-xs font-semibold text-teal-700 hover:text-teal-900 flex items-center gap-1"
                   >
-                    Pilih Paket
+                    Pilih Terapi
                     <ChevronRight className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -592,7 +592,7 @@ export default function AntreanOnlinePage() {
                 {/* Paket Layanan */}
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">
-                    Pilihan Paket Bekam *
+                    Pilihan Jenis Terapi *
                   </label>
                   <select
                     value={serviceId}
