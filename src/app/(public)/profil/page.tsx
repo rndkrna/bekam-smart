@@ -331,8 +331,8 @@ export default function CompanyProfilePage() {
               <div className="absolute -inset-3 rounded-[2rem] bg-gradient-to-br from-teal-400/40 via-emerald-400/10 to-amber-300/30 blur-xl" />
               <div className="relative aspect-[16/10] overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
                 <Image
-                  src="/images/profil/lobby-klinik.jpg"
-                  alt="Lobi resepsionis Bekam Bintan Therapy dengan display TV antrean"
+                  src="/images/profil/gedung-depan-klinik.jpg"
+                  alt="Fasad depan dan resepsionis modern Bekam Bintan Therapy"
                   fill
                   preload
                   sizes="(min-width: 1024px) 50vw, 100vw"
@@ -387,8 +387,8 @@ export default function CompanyProfilePage() {
             <div className="relative order-2 lg:order-1">
               <div className="relative aspect-[4/3] overflow-hidden rounded-3xl shadow-xl shadow-slate-900/10">
                 <Image
-                  src="/images/profil/ruang-terapi.jpg"
-                  alt="Ruang terapi bekam privat dengan kop dan jarum steril sekali pakai"
+                  src="/images/profil/interior-klinik.jpg"
+                  alt="Area resepsionis interior dan bilik terapi higienis Bekam Bintan Therapy"
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover transition-transform duration-700 hover:scale-105"
